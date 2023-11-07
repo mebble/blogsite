@@ -1,11 +1,13 @@
 (ns blogsite-clj.core
   (:gen-class)
-  (:require [ring.adapter.jetty :refer [run-jetty]]))
+  (:require [ring.adapter.jetty :refer [run-jetty]]
+            [compojure.core :refer [GET routes]]
+            [compojure.route :refer [not-found]]))
 
-(defn handler [_req]
-  {:status 200
-   :headers {"Content-Type" "text/html"}
-   :body "Hello World"})
+(def handler
+  (routes
+   (GET "/user/:id" [id] (str "Hello " id))
+   (not-found "Not found")))
 
 (defn -main
   "I don't do a whole lot ... yet."
