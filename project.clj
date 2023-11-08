@@ -6,7 +6,8 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [ring/ring-core "1.8.2"]
                  [ring/ring-jetty-adapter "1.8.2"]
-                 [compojure "1.7.0"]]
+                 [compojure "1.7.0"]
+                 [selmer "1.12.59"]]
   :main ^:skip-aot blogsite-clj.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all

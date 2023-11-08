@@ -1,12 +1,14 @@
 (ns blogsite-clj.core
   (:gen-class)
   (:require [ring.adapter.jetty :refer [run-jetty]]
-            [compojure.core :refer [GET routes]]
-            [compojure.route :refer [not-found]]))
+            [compojure.core :refer [GET POST routes]]
+            [compojure.route :refer [not-found]]
+            [selmer.parser :refer [render-file]]))
 
 (def handler
   (routes
-   (GET "/user/:id" [id] (str "Hello " id))
+   (GET "/user/:id" [id] (render-file "home.html" {:name id}))
+   (POST "/clicked" [] (str "You clicked me!"))
    (not-found "Not found")))
 
 (defn -main
