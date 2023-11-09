@@ -7,7 +7,9 @@
                  [ring/ring-core "1.8.2"]
                  [ring/ring-jetty-adapter "1.8.2"]
                  [compojure "1.7.0"]
-                 [selmer "1.12.59"]]
+                 [selmer "1.12.59"]
+                 [com.github.seancorfield/next.jdbc "1.3.894"]
+                 [org.xerial/sqlite-jdbc "3.43.2.2"]]
   :main ^:skip-aot blogsite-clj.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all

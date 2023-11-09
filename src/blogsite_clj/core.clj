@@ -1,13 +1,19 @@
 (ns blogsite-clj.core
   (:gen-class)
-  (:require [ring.adapter.jetty :refer [run-jetty]]
-            [compojure.core :refer [GET POST routes]]
-            [compojure.route :refer [not-found]]
-            [selmer.parser :refer [render-file]]))
+  (:require
+   [blogsite-clj.model.blog :refer [get-blogs]]
+   [compojure.core :refer [GET POST routes]]
+   [compojure.route :refer [not-found]]
+   [next.jdbc :as jdbc]
+   [ring.adapter.jetty :refer [run-jetty]]
+   [selmer.parser :refer [render-file]]))
+
+(def db (jdbc/get-datasource {:dbtype "sqlite" :dbname "blog.db"}))
 
 (def handler
   (routes
-   (GET "/user/:id" [id] (render-file "home.html" {:name id}))
+   (GET "/" [] (do (prn (get-blogs db)) (str "hi")))
+   (GET "/user/:id" [id] (render-file "views/home.html" {:name id}))
    (POST "/clicked" [] (str "You clicked me!"))
    (not-found "Not found")))
 
