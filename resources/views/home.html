@@ -1,9 +1,16 @@
 {% extends "views/base.html" %}
 
 {% block title %}
-<title>Blog</title>
+<title>Blogging Site</title>
 {% endblock %}
 
 {% block body %}
-<p>Hi {{ name }}</p>
+<ul>
+{% for blog in blogs %}
+    <li>
+        <a href="/blogs/{{blog.slug}}">{{blog.title}}</a>
+        <p>{{blog.description}}</p>
+    </li>
+{% endfor %}
+</ul>
 {% endblock %}
