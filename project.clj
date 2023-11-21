@@ -6,6 +6,7 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  [ring/ring-core "1.8.2"]
                  [ring/ring-jetty-adapter "1.8.2"]
+                 [ring-refresh "0.1.3"]
                  [compojure "1.7.0"]
                  [selmer "1.12.59"]
                  [com.github.seancorfield/next.jdbc "1.3.894"]

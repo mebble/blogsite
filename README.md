@@ -10,6 +10,14 @@ FIXME: explanation
 
 ## Development
 
+Set environment variables:
+
+```
+export DEVELOPMENT=true
+```
+
+Run:
+
 ```
 lein run
 ```
