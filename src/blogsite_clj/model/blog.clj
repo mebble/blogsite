@@ -17,3 +17,6 @@
   (->> (sql/query db ["select * from blogs where slug = ?" slug])
        (first)
        (map-keys)))
+
+(defn save-blog [db blog]
+  (->> (sql/insert! db :blogs blog)))

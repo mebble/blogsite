@@ -1,0 +1,33 @@
+{% extends "views/base.html" %}
+
+{% block title %}
+<title>New Post</title>
+{% endblock %}
+
+{% block body %}
+<h1>Create a new post</h1>
+<form hx-post="/blogs">
+    <div>
+        <label for="title">
+            <h2>Title</h2>
+        </label>
+        <br>
+        <input id="title" name="title" type="text">
+    </div>
+    <div>
+        <label for="description">
+            <h2>Description</h2>
+        </label>
+        <br>
+        <input id="description" name="description" type="text">
+    </div>
+    <div>
+        <label for="contents">
+            <h2>Contents</h2>
+        </label>
+        <br>
+        <textarea id="contents" name="contents" rows="10" cols="100"></textarea>
+    </div>
+    <button type="submit">Create</button>
+</form>
+{% endblock %}
