@@ -5,6 +5,12 @@
 {% endblock %}
 
 {% block body %}
+
+{% if blogs|empty? %}
+<p>There are no blog posts!</p>
+<a href="/new">Create a new post</a>
+{% else %}
+<h1>Posts</h1>
 <ul>
 {% for blog in blogs %}
     <li>
@@ -13,4 +19,6 @@
     </li>
 {% endfor %}
 </ul>
+{% endif %}
+
 {% endblock %}

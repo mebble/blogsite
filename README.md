@@ -21,3 +21,11 @@ Run:
 ```
 lein run
 ```
+
+## Architecture
+
+### Code
+
+- Model layer: sql and object schemas
+- Service layer: platform-independent logic, monad stuff, etc
+- Controller layer: validation, parsing/creating req&res, HTTP stuff
