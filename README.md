@@ -29,3 +29,8 @@ lein run
 - Model layer: sql and object schemas
 - Service layer: platform-independent logic, monad stuff, etc
 - Controller layer: validation, parsing/creating req&res, HTTP stuff
+
+### Database
+
+- DB records primary keys:
+    - Using rowid without explicit [autoincrement](https://www.sqlite.org/autoinc.html)

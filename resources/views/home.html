@@ -8,17 +8,17 @@
 
 {% if blogs|empty? %}
 <p>There are no blog posts!</p>
-<a href="/new">Create a new post</a>
 {% else %}
 <h1>Posts</h1>
 <ul>
 {% for blog in blogs %}
     <li>
-        <a href="/blogs/{{blog.slug}}">{{blog.title}}</a>
+        <a href="/blogs/{{blog.id}}/{{blog.slug}}">{{blog.title}}</a>
         <p>{{blog.description}}</p>
     </li>
 {% endfor %}
 </ul>
 {% endif %}
+<a href="/new">Create a new post</a>
 
 {% endblock %}

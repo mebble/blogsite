@@ -31,14 +31,14 @@
                              slug (sluj (get params "title"))
                              new-blog (-> (select-keys params ["title" "description" "contents"])
                                           (keys-to-keywords)
-                                          (assoc :slug slug))
-                             url (str "/blogs/" slug)]
+                                          (assoc :slug slug))]
                          (e/branch (save-blog db new-blog)
                                    (fn [_] (status 500))
-                                   (fn [_] (header {} "HX-Location" url)))))
-    (GET "/blogs/:slug" [slug] (if-let [blog (get-blog db slug)]
-                                 (render-file "views/blog.html" {:blog blog})
-                                 (not-found "no such blog post")))
+                                   (fn [blog-id] (let [url (str "/blogs/" blog-id "/" slug)]
+                                                   (header {} "HX-Location" url))))))
+    (GET "/blogs/:id/:slug" [_id slug] (if-let [blog (get-blog db slug)]
+                                         (render-file "views/blog.html" {:blog blog})
+                                         (not-found "no such blog post")))
     (r/not-found "Not found"))))
 
 (when (env "DEVELOPMENT")

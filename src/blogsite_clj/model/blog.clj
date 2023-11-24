@@ -3,7 +3,8 @@
    [clojure.set :refer [rename-keys]]
    [next.jdbc.sql :as sql]
    [cats.monad.either :as e]
-   [cats.monad.maybe :as m]))
+   [cats.monad.maybe :as m]
+   [next.jdbc :as jdbc]))
 
 (defmacro try-either [expr]
   (list
@@ -18,20 +19,28 @@
            (m/just v))))
 
 (defn- map-keys [m]
-  (rename-keys m {:blogs/slug :slug
+  (rename-keys m {:blogs/rowid :id
+                  :blogs/slug :slug
                   :blogs/title :title
                   :blogs/description :description
                   :blogs/contents :contents}))
 
 (defn get-blogs [db]
-  (->> (sql/query db ["select * from blogs"])
+  (->> (sql/query db ["select rowid, * from blogs"])
        (map map-keys)))
 
 (defn get-blog [db slug]
-  (->> (sql/query db ["select * from blogs where slug = ?" slug])
+  (->> (sql/query db ["select rowid, * from blogs where slug = ?" slug])
        (first)
        (map-keys)))
 
 (defn save-blog [db blog]
   (try-either
-   (->> (sql/insert! db :blogs blog))))
+   (->> (jdbc/execute-one!
+         db
+         ["insert into blogs (slug, title, description, contents) values (?, ?, ?, ?) returning rowid"
+          (:slug blog)
+          (:title blog)
+          (:description blog)
+          (:contents blog)])
+        (:blogs/rowid))))
