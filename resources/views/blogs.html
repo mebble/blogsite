@@ -1,0 +1,31 @@
+{% extends "views/base.html" %}
+
+{% block title %}
+<title>Blogging Site</title>
+{% endblock %}
+
+{% block body %}
+
+<div class="flex justify-between items-center mb-6">
+    <h1 class="text-5xl font-semibold">Posts</h1>
+    <a href="/new" class="bg-indigo-500 text-white px-2 py-1 rounded">Create a new post</a>
+</div>
+
+{% if blogs|empty? %}
+
+<p>There are no blog posts!</p>
+
+{% else %}
+
+<ul class="space-y-2">
+{% for blog in blogs %}
+    <li class="border border-black rounded-md px-4 py-3">
+        <a href="/blogs/{{blog.id}}/{{blog.slug}}" class="text-2xl font-semibold underline underline-offset-4 inline-block mb-1">{{blog.title}}</a>
+        <p>{{blog.description}}</p>
+    </li>
+{% endfor %}
+</ul>
+
+{% endif %}
+
+{% endblock %}

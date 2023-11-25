@@ -10,7 +10,7 @@
   (render-file "views/new.html" {}))
 
 (defn get-blogs [db]
-  (render-file "views/home.html" {:blogs (model/get-blogs db)}))
+  (render-file "views/blogs.html" {:blogs (model/get-blogs db)}))
 
 (defn- redirect-url [id slug]
   (str "/blogs/" id "/" slug))
