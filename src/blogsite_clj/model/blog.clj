@@ -29,8 +29,8 @@
   (->> (sql/query db ["select rowid, * from blogs"])
        (map map-keys)))
 
-(defn get-blog [db slug]
-  (->> (sql/query db ["select rowid, * from blogs where slug = ?" slug])
+(defn get-blog [db id]
+  (->> (sql/query db ["select rowid, * from blogs where rowid = ?" id])
        (first)
        (map-keys)))
 

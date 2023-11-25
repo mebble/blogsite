@@ -22,7 +22,7 @@
     (GET "/blogs" [] (c/get-blogs db))
     (GET "/new", [] (c/get-blog-creation))
     (POST "/blogs" req (c/post-new-blog db req))
-    (GET "/blogs/:id/:slug" [_id slug] (c/get-blog db slug))
+    (GET "/blogs/:id/:slug" [id slug] (c/get-blog db id slug))
     (r/not-found "Not found"))))
 
 (when (env "DEVELOPMENT")

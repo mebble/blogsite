@@ -2,7 +2,7 @@
   (:require
    [blogsite-clj.model.blog :as model]
    [cats.monad.either :as e]
-   [ring.util.response :refer [header not-found status]]
+   [ring.util.response :refer [header not-found redirect status]]
    [selmer.parser :refer [render-file]]
    [sluj.core :refer [sluj]]))
 
@@ -12,9 +12,15 @@
 (defn get-blogs [db]
   (render-file "views/home.html" {:blogs (model/get-blogs db)}))
 
-(defn get-blog [db slug]
-  (if-let [blog (model/get-blog db slug)]
-    (render-file "views/blog.html" {:blog blog})
+(defn- redirect-url [id slug]
+  (str "/blogs/" id "/" slug))
+
+(defn get-blog [db id slug]
+  (if-let [blog (model/get-blog db id)]
+    (if (= slug (:slug blog))
+      (render-file "views/blog.html" {:blog blog})
+      (let [url (redirect-url (:id blog) (:slug blog))]
+        (redirect url)))
     (not-found "no such blog post")))
 
 (defn- keys-to-keywords [m]
@@ -28,5 +34,6 @@
                      (assoc :slug slug))]
     (e/branch (model/save-blog db new-blog)
               (fn [_] (status 500))
-              (fn [blog-id] (let [url (str "/blogs/" blog-id "/" slug)]
+              (fn [blog-id] (let [url (redirect-url blog-id slug)]
+                              ;; [?] An ordinary redirect after POST doesn't seem to work, but not sure. Must revisit
                               (header {} "HX-Location" url))))))
