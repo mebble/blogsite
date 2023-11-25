@@ -1,44 +1,28 @@
 (ns blogsite-clj.core
   (:gen-class)
   (:require
-   [blogsite-clj.model.blog :refer [get-blog get-blogs save-blog]]
-   [cats.monad.either :as e]
+   [blogsite-clj.controller.blog :as c]
    [compojure.core :refer [GET POST routes]]
    [compojure.route :as r]
-   [next.jdbc :as jdbc]
+   [next.jdbc :refer [get-datasource]]
    [ring.adapter.jetty :refer [run-jetty]]
    [ring.middleware.params :refer [wrap-params]]
    [ring.middleware.refresh :refer [wrap-refresh]]
-   [ring.util.response :refer [header status not-found]]
-   [selmer.parser :refer [cache-off! render-file]]
-   [sluj.core :refer [sluj]]))
+   [selmer.parser :refer [cache-off!]]))
 
-(def db (jdbc/get-datasource {:dbtype "sqlite" :dbname "blog.db"}))
+(def db (get-datasource {:dbtype "sqlite" :dbname "blog.db"}))
 
 (defn env [key]
   (some-> (System/getenv key)
           (read-string)))
 
-(defn keys-to-keywords [m]
-  (into {} (map (fn [[k v]] (vector (keyword k) v)) m)))
-
 (def handler
   (wrap-params
    (routes
-    (GET "/blogs" [] (render-file "views/home.html" {:blogs (get-blogs db)}))
-    (GET "/new", [] (render-file "views/new.html" {}))
-    (POST "/blogs" req (let [params (:form-params req)
-                             slug (sluj (get params "title"))
-                             new-blog (-> (select-keys params ["title" "description" "contents"])
-                                          (keys-to-keywords)
-                                          (assoc :slug slug))]
-                         (e/branch (save-blog db new-blog)
-                                   (fn [_] (status 500))
-                                   (fn [blog-id] (let [url (str "/blogs/" blog-id "/" slug)]
-                                                   (header {} "HX-Location" url))))))
-    (GET "/blogs/:id/:slug" [_id slug] (if-let [blog (get-blog db slug)]
-                                         (render-file "views/blog.html" {:blog blog})
-                                         (not-found "no such blog post")))
+    (GET "/blogs" [] (c/get-blogs db))
+    (GET "/new", [] (c/get-blog-creation))
+    (POST "/blogs" req (c/post-new-blog db req))
+    (GET "/blogs/:id/:slug" [_id slug] (c/get-blog db slug))
     (r/not-found "Not found"))))
 
 (when (env "DEVELOPMENT")
