@@ -8,6 +8,7 @@
    [ring.adapter.jetty :refer [run-jetty]]
    [ring.middleware.params :refer [wrap-params]]
    [ring.middleware.refresh :refer [wrap-refresh]]
+   [ring.middleware.reload :refer [wrap-reload]]
    [selmer.parser :refer [cache-off!]]))
 
 (def db (get-datasource {:dbtype "sqlite" :dbname "blog.db"}))
@@ -16,7 +17,7 @@
   (some-> (System/getenv key)
           (read-string)))
 
-(def handler
+(def app
   (wrap-params
    (routes
     (GET "/blogs" [] (c/get-blogs db))
@@ -28,8 +29,9 @@
 (when (env "DEVELOPMENT")
   (println "Development mode")
   (cache-off!)
-  (def handler (wrap-refresh handler)))
+  (def app (wrap-refresh app))
+  (def app (wrap-reload app)))
 
 (defn -main
   [& _args]
-  (run-jetty handler {:port 4000 :join? false}))
+  (run-jetty app {:port 4000 :join? false}))
