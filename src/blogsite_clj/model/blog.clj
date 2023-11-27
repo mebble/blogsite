@@ -11,6 +11,12 @@
    (list 'e/right expr)
    '(catch Exception e (e/left e))))
 
+(defn- to-base36 [num]
+  (Integer/toString num 36))
+
+(defn- from-base36 [s]
+  (Integer/parseInt s 36))
+
 (defn- map-keys [m]
   (rename-keys m {:blogs/rowid :id
                   :blogs/slug :slug
@@ -18,14 +24,20 @@
                   :blogs/description :description
                   :blogs/contents :contents}))
 
+(defn- map-to-domain [m]
+  (update m :id to-base36))
+
 (defn get-blogs [db]
   (->> (sql/query db ["select rowid, * from blogs"])
-       (map map-keys)))
+       (map map-keys)
+       (map map-to-domain)))
 
 (defn get-blog [db id]
-  (->> (sql/query db ["select rowid, * from blogs where rowid = ?" id])
-       (first)
-       (map-keys)))
+  (let [rowid (from-base36 id)]
+    (some->> (sql/query db ["select rowid, * from blogs where rowid = ?" rowid])
+             (first)
+             (map-keys)
+             (map-to-domain))))
 
 (defn save-blog [db blog]
   (try-either
@@ -36,4 +48,5 @@
           (:title blog)
           (:description blog)
           (:contents blog)])
-        (:blogs/rowid))))
+        (:blogs/rowid)
+        (to-base36))))
