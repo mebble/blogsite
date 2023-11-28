@@ -6,6 +6,7 @@
    [compojure.route :as r]
    [next.jdbc :refer [get-datasource]]
    [ring.adapter.jetty :refer [run-jetty]]
+   [ring.middleware.keyword-params :refer [wrap-keyword-params]]
    [ring.middleware.params :refer [wrap-params]]
    [ring.middleware.refresh :refer [wrap-refresh]]
    [ring.middleware.reload :refer [wrap-reload]]
@@ -17,20 +18,25 @@
   (some-> (System/getenv key)
           (read-string)))
 
-(def app
-  (wrap-params
-   (routes
-    (GET "/blogs" [] (c/get-blogs db))
-    (GET "/new", [] (c/get-blog-creation))
-    (POST "/blogs" req (c/post-new-blog db req))
-    (GET "/blogs/:id/:slug" [id slug] (c/get-blog db id slug))
-    (r/not-found "Not found"))))
+(def handler
+  (routes
+   (GET "/blogs" [] (c/get-blogs db))
+   (GET "/new", [] (c/get-blog-creation))
+   (POST "/blogs" req (c/post-new-blog db req))
+   (GET "/blogs/:id/:slug" [id slug] (c/get-blog db id slug))
+   (r/not-found "Not found")))
+
+(def app (-> handler
+             ;; ordering of the middleware matters
+             (wrap-keyword-params)
+             (wrap-params)))
 
 (when (env "DEVELOPMENT")
   (println "Development mode")
   (cache-off!)
-  (def app (wrap-refresh app))
-  (def app (wrap-reload app)))
+  (def app (-> app
+               (wrap-refresh)
+               (wrap-reload))))
 
 (defn -main
   [& _args]
