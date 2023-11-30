@@ -6,8 +6,11 @@
    [selmer.parser :refer [render-file]]
    [sluj.core :refer [sluj]]))
 
-(defn get-blog-creation []
-  (render-file "views/new.html" {}))
+(defn get-blog-creation [req]
+  (let [user (:session req)]
+    (if (seq user)
+      (render-file "views/new.html" {:username (:name user)})
+      (redirect "/login"))))
 
 (defn get-blogs [db]
   (render-file "views/blogs.html" {:blogs (m/get-blogs db)}))
@@ -24,12 +27,28 @@
     (not-found "no such blog post")))
 
 (defn post-new-blog [db req]
-  (let [params   (:params req)
-        slug     (sluj (:title params ""))
-        new-blog (-> (select-keys params [:title :description :contents])
-                     (assoc :slug slug))]
-    (e/branch (m/save-blog db new-blog)
-              (fn [_] (status 500))
-              (fn [blog-id] (let [url (redirect-url blog-id slug)]
+  (let [user (:session req)]
+    (if (seq user)
+      (let [params   (:params req)
+            slug     (sluj (:title params ""))
+            new-blog (-> (select-keys params [:title :description :contents])
+                         (assoc :slug slug))]
+        (e/branch (m/save-blog db new-blog)
+                  (fn [_] (status 500))
+                  (fn [blog-id] (let [url (redirect-url blog-id slug)]
                               ;; [?] An ordinary redirect after POST doesn't seem to work, but not sure. Must revisit
-                              (header {} "HX-Location" url))))))
+                                  (header {} "HX-Location" url)))))
+      (header {} "HX-Location" "/login"))))
+
+(def userinfo {:name "john"
+               :email "john@example.com"})
+
+(defn login-page []
+  (render-file "views/login.html" {}))
+
+(defn login [req]
+  (let [password (-> req :params :password)]
+    (if (= password "abc")
+      {:body "Hi there"
+       :session userinfo}
+      {:body "Wrong password"})))

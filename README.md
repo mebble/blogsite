@@ -10,6 +10,12 @@ FIXME: explanation
 
 ## Development
 
+Run database migrations:
+
+```
+sh scripts/run-migrations.sh
+```
+
 Set environment variables:
 
 ```

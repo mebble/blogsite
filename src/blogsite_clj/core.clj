@@ -10,6 +10,8 @@
    [ring.middleware.params :refer [wrap-params]]
    [ring.middleware.refresh :refer [wrap-refresh]]
    [ring.middleware.reload :refer [wrap-reload]]
+   [ring.middleware.session :refer [wrap-session]]
+   [jdbc-ring-session.core :refer [jdbc-store]]
    [selmer.parser :refer [cache-off!]]))
 
 (def db (get-datasource {:dbtype "sqlite" :dbname "blog.db"}))
@@ -20,14 +22,17 @@
 
 (def handler
   (routes
+   (GET "/login" [] (c/login-page))
+   (POST "/login" req (c/login req))
    (GET "/blogs" [] (c/get-blogs db))
-   (GET "/new", [] (c/get-blog-creation))
+   (GET "/new", req (c/get-blog-creation req))
    (POST "/blogs" req (c/post-new-blog db req))
    (GET "/blogs/:id/:slug" [id slug] (c/get-blog db id slug))
    (r/not-found "Not found")))
 
 (def app (-> handler
-             ;; ordering of the middleware matters
+             (wrap-session {:store (jdbc-store db)})
+             ;; wrap-params before wrap-keyword-params
              (wrap-keyword-params)
              (wrap-params)))
 

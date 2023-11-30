@@ -8,7 +8,10 @@
 
 <div class="flex justify-between items-center mb-6">
     <h1 class="text-5xl font-semibold">Posts</h1>
-    <a href="/new" class="bg-indigo-500 text-white px-2 py-1 rounded">Create a new post</a>
+    <div>
+        <a href="/new" class="bg-indigo-500 text-white px-2 py-1 rounded">Create a new post</a>
+        <a href="/login" class="bg-indigo-500 text-white px-2 py-1 rounded">Log in</a>
+    </div>
 </div>
 
 {% if blogs|empty? %}

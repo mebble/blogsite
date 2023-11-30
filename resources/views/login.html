@@ -1,0 +1,26 @@
+{% extends "views/base.html" %}
+
+{% block title %}
+<title>Log In</title>
+{% endblock %}
+
+{% block body %}
+<div class="mb-6">
+    <h1 class="text-5xl font-semibold">Log In</h1>
+</div>
+
+<form hx-post="/login" hx-target="#incorrect-password" class="space-y-2">
+    <div>
+        <label for="username" class="inline-block mb-2">Username</label>
+        <br>
+        <input id="username" name="username" type="text" class="block w-full rounded-md border border-gray-500 py-1.5 pl-2 pr-20 text-gray-900 focus:focus:ring-inset sm:text-sm sm:leading-6">
+    </div>
+    <div>
+        <label for="password" class="inline-block mb-2">Password</label>
+        <br>
+        <input id="password" name="password" type="password" class="block w-full rounded-md border border-gray-500 py-1.5 pl-2 pr-20 text-gray-900 focus:focus:ring-inset sm:text-sm sm:leading-6">
+    </div>
+    <button type="submit" class="bg-indigo-500 text-white px-2 py-1 rounded">Log In</button>
+</form>
+<p id="incorrect-password"></p>
+{% endblock %}
