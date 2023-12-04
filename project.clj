@@ -14,6 +14,7 @@
                  [com.github.rawleyfowler/sluj "1.0.2"]
                  [funcool/cats "2.4.2"]
                  [jdbc-ring-session "1.5.3"]]
+  :plugins [[cider/cider-nrepl "0.44.0"]]
   :main ^:skip-aot blogsite-clj.core
   :target-path "target/%s"
   :profiles {:uberjar {:aot :all
