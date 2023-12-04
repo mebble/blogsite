@@ -7,7 +7,6 @@
                  [ring/ring-core "1.8.2"]
                  [ring/ring-jetty-adapter "1.8.2"]
                  [ring-refresh "0.1.3"]
-                 [ring/ring-devel "1.11.0-RC1"]
                  [compojure "1.7.0"]
                  [selmer "1.12.59"]
                  [com.github.seancorfield/next.jdbc "1.3.894"]

@@ -9,7 +9,6 @@
    [ring.middleware.keyword-params :refer [wrap-keyword-params]]
    [ring.middleware.params :refer [wrap-params]]
    [ring.middleware.refresh :refer [wrap-refresh]]
-   [ring.middleware.reload :refer [wrap-reload]]
    [ring.middleware.session :refer [wrap-session]]
    [jdbc-ring-session.core :refer [jdbc-store]]
    [selmer.parser :refer [cache-off!]]))
@@ -40,8 +39,7 @@
   (println "Development mode")
   (cache-off!)
   (def app (-> app
-               (wrap-refresh)
-               (wrap-reload))))
+               (wrap-refresh))))
 
 (defn -main
   [& _args]
