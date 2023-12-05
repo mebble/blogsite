@@ -7,9 +7,9 @@
    [sluj.core :refer [sluj]]))
 
 (defn get-blog-creation [req]
-  (let [user (:session req)]
-    (if (seq user)
-      (render-file "views/new.html" {:username (:name user)})
+  (let [username (:session req)]
+    (if (seq username)
+      (render-file "views/new.html" {:username username})
       (redirect "/login"))))
 
 (defn get-blogs [db]
@@ -27,8 +27,8 @@
     (not-found "no such blog post")))
 
 (defn post-new-blog [db req]
-  (let [user (:session req)]
-    (if (seq user)
+  (let [username (:session req)]
+    (if (seq username)
       (let [params   (:params req)
             slug     (sluj (:title params ""))
             new-blog (-> (select-keys params [:title :description :contents])
@@ -39,16 +39,3 @@
                               ;; [?] An ordinary redirect after POST doesn't seem to work, but not sure. Must revisit
                                   (header {} "HX-Location" url)))))
       (header {} "HX-Location" "/login"))))
-
-(def userinfo {:name "john"
-               :email "john@example.com"})
-
-(defn login-page []
-  (render-file "views/login.html" {}))
-
-(defn login [req]
-  (let [password (-> req :params :password)]
-    (if (= password "abc")
-      {:body "Hi there"
-       :session userinfo}
-      {:body "Wrong password"})))

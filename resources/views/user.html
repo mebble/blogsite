@@ -1,0 +1,12 @@
+{% extends "views/base.html" %}
+
+{% block title %}
+<title>{{user.username}}</title>
+{% endblock %}
+
+{% block body %}
+<div class="mb-2 space-y-2">
+    <h1 class="text-5xl font-semibold">{{user.username}}</h1>
+</div>
+<h2>Blog posts:</h2>
+{% endblock %}

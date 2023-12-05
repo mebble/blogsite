@@ -1,7 +1,8 @@
 (ns blogsite-clj.core
   (:gen-class)
   (:require
-   [blogsite-clj.controller.blog :as c]
+   [blogsite-clj.controller.blog :as c-blog]
+   [blogsite-clj.controller.user :as c-user]
    [compojure.core :refer [GET POST routes]]
    [compojure.route :as r]
    [next.jdbc :refer [get-datasource]]
@@ -21,12 +22,14 @@
 
 (def handler
   (routes
-   (GET "/login" [] (c/login-page))
-   (POST "/login" req (c/login req))
-   (GET "/blogs" [] (c/get-blogs db))
-   (GET "/new", req (c/get-blog-creation req))
-   (POST "/blogs" req (c/post-new-blog db req))
-   (GET "/blogs/:id/:slug" [id slug] (c/get-blog db id slug))
+   (GET "/login" [] (c-user/login-page))
+   (POST "/login" req (c-user/login db req))
+   (GET "/dashboard" [req] (c-user/dashboard db req))
+   (GET "/blogs" [] (c-blog/get-blogs db))
+   (GET "/new", req (c-blog/get-blog-creation req))
+   (POST "/blogs" req (c-blog/post-new-blog db req))
+   (GET "/blogs/:id/:slug" [id slug] (c-blog/get-blog db id slug))
+   (GET "/:username" [username] (c-user/user-page db username))
    (r/not-found "Not found")))
 
 (def app (-> handler
