@@ -5,9 +5,6 @@
    [ring.util.response :refer [header]]
    [selmer.parser :refer [render-file]]))
 
-(defn- redirect-url [user]
-  (str "/" (:username user)))
-
 (defn login-page []
   (render-file "views/login.html" {}))
 
@@ -18,7 +15,7 @@
         hashed (:password user)]
     (if (:valid (hashers/verify password hashed))
       (assoc
-       (header {} "HX-Location" (redirect-url user))
+       (header {} "HX-Location" "/dashboard")
        :session (:username user))
       {:body "Wrong password"})))
 
@@ -27,7 +24,7 @@
                     (update :password (fn [p] (hashers/derive p {:alg :bcrypt+blake2b-512}))))
         user (m/insert-user db user-in)]
     (assoc
-     (header {} "HX-Location" (redirect-url user))
+     (header {} "HX-Location" "/dashboard")
      :session (:username user))))
 
 (defn login [db req]
@@ -40,11 +37,8 @@
   (some-> (m/get-user db username)
           (#(render-file "views/user.html" {:user %1}))))
 
-(defn dashboard [db req]
-  (let [username (:session req)]
-    (if (seq username)
-      (render-file "views/dashboard.html" {:user (m/get-user db username)})
-      (header {} "HX-Location" "/login"))))
+(defn dashboard [db username]
+  (render-file "views/dashboard.html" {:user (m/get-user db username)}))
 
 (defn logout []
   (header {:session nil} "HX-Location" "/login"))
