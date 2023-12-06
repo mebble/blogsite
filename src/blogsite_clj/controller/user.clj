@@ -41,4 +41,10 @@
           (#(render-file "views/user.html" {:user %1}))))
 
 (defn dashboard [db req]
-  nil)
+  (let [username (:session req)]
+    (if (seq username)
+      (render-file "views/dashboard.html" {:user (m/get-user db username)})
+      (header {} "HX-Location" "/login"))))
+
+(defn logout []
+  (header {:session nil} "HX-Location" "/login"))

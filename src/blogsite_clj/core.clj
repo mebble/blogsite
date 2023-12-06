@@ -24,7 +24,8 @@
   (routes
    (GET "/login" [] (c-user/login-page))
    (POST "/login" req (c-user/login db req))
-   (GET "/dashboard" [req] (c-user/dashboard db req))
+   (POST "/logout" [] (c-user/logout))
+   (GET "/dashboard" req (c-user/dashboard db req))
    (GET "/blogs" [] (c-blog/get-blogs db))
    (GET "/new", req (c-blog/get-blog-creation req))
    (POST "/blogs" req (c-blog/post-new-blog db req))
