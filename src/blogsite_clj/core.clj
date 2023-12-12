@@ -7,7 +7,7 @@
    [compojure.core :refer [GET POST routes]]
    [compojure.route :as r]
    [jdbc-ring-session.core :refer [jdbc-store]]
-   [next.jdbc :refer [get-datasource]]
+   [next.jdbc :refer [get-datasource execute-one!]]
    [ring.adapter.jetty :refer [run-jetty]]
    [ring.middleware.keyword-params :refer [wrap-keyword-params]]
    [ring.middleware.params :refer [wrap-params]]
@@ -16,6 +16,7 @@
    [selmer.parser :refer [cache-off!]]))
 
 (def db (get-datasource {:dbtype "sqlite" :dbname "blog.db"}))
+(execute-one! db ["PRAGMA foreign_keys = ON"]) ;; must do this per connection to the db, hence can't put this in migration file
 
 (defn env [key]
   (some-> (System/getenv key)
@@ -26,10 +27,10 @@
    (GET "/login" [] (c-user/login-page))
    (POST "/login" req (c-user/login db req))
    (POST "/logout" [] (c-user/logout))
-   (GET "/dashboard" req (a/auth-route req (fn [session] (c-user/dashboard db session))))
+   (GET "/dashboard" req (a/auth-route req (fn [{:keys [username]}] (c-user/dashboard db username))))
    (GET "/blogs" [] (c-blog/get-blogs db))
-   (GET "/new", req (a/auth-route req (fn [session] (c-blog/get-blog-creation session))))
-   (POST "/blogs" req (a/auth-route req (fn [session] (c-blog/post-new-blog db req session))))
+   (GET "/new", req (a/auth-route req (fn [{:keys [username]}] (c-blog/get-blog-creation username))))
+   (POST "/blogs" req (a/auth-route req (fn [{:keys [user_id]}] (c-blog/post-new-blog db req user_id))))
    (GET "/blogs/:id/:slug" [id slug] (c-blog/get-blog db id slug))
    (GET "/:username" [username] (c-user/user-page db username))
    (r/not-found "Not found")))

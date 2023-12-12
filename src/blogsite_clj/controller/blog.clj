@@ -23,12 +23,12 @@
         (redirect url)))
     (not-found "no such blog post")))
 
-(defn post-new-blog [db req _username]
+(defn post-new-blog [db req user_id]
   (let [params   (:params req)
         slug     (sluj (:title params ""))
         new-blog (-> (select-keys params [:title :description :contents])
                      (assoc :slug slug))]
-    (e/branch (m/save-blog db new-blog)
+    (e/branch (m/save-blog db new-blog user_id)
               (fn [_] (status 500))
               (fn [blog-id] (let [url (redirect-url blog-id slug)]
                               ;; [?] An ordinary redirect after POST doesn't seem to work, but not sure. Must revisit

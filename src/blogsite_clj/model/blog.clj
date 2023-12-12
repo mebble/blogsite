@@ -39,14 +39,15 @@
              (map-keys)
              (map-to-domain))))
 
-(defn save-blog [db blog]
+(defn save-blog [db blog user_id]
   (try-either
    (->> (jdbc/execute-one!
          db
-         ["insert into blogs (slug, title, description, contents) values (?, ?, ?, ?) returning rowid"
+         ["insert into blogs (slug, title, description, contents, user_id) values (?, ?, ?, ?, ?) returning rowid"
           (:slug blog)
           (:title blog)
           (:description blog)
-          (:contents blog)])
+          (:contents blog)
+          user_id])
         (:blogs/rowid)
         (to-base36))))

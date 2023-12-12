@@ -1,5 +1,6 @@
 (ns blogsite-clj.controller.user
   (:require
+   [blogsite-clj.auth :refer [create-session]]
    [blogsite-clj.model.user :as m]
    [buddy.hashers :as hashers]
    [ring.util.response :refer [header]]
@@ -10,14 +11,14 @@
 
 (defn- -login [db req]
   (let [password (-> req :params :password)
-        username (-> req :params :username)
-        user (m/get-user db username)
-        hashed (:password user)]
-    (if (:valid (hashers/verify password hashed))
-      (assoc
-       (header {} "HX-Location" "/dashboard")
-       :session (:username user))
-      {:body "Wrong password"})))
+        username (-> req :params :username)]
+    (if-let [user (m/get-user db username)]
+      (if (:valid (hashers/verify password (:password user)))
+        (assoc
+         (header {} "HX-Location" "/dashboard")
+         :session (create-session user))
+        {:body "Wrong password"})
+      (header {} "HX-Location" "/login"))))
 
 (defn- signup [db req]
   (let [user-in (-> (select-keys (:params req) [:username :password])
@@ -25,7 +26,7 @@
         user (m/insert-user db user-in)]
     (assoc
      (header {} "HX-Location" "/dashboard")
-     :session (:username user))))
+     :session (create-session user))))
 
 (defn login [db req]
   (case (get-in req [:params :type])

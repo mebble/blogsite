@@ -5,7 +5,8 @@
    [next.jdbc.sql :as sql]))
 
 (defn- map-keys [m]
-  (rename-keys m {:users/username :username
+  (rename-keys m {:users/id       :id
+                  :users/username :username
                   :users/password :password}))
 
 (defn get-user [db username]
