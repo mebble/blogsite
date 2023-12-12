@@ -22,19 +22,22 @@
                   :blogs/slug :slug
                   :blogs/title :title
                   :blogs/description :description
-                  :blogs/contents :contents}))
+                  :blogs/contents :contents
+                  :blogs/user_id  :user_id
+                  :users/username :username}))
 
 (defn- map-to-domain [m]
   (update m :id to-base36))
 
 (defn get-blogs [db]
-  (->> (sql/query db ["select rowid, * from blogs"])
+  (->> (sql/query db ["select blogs.rowid, blogs.*, users.username from blogs left join users on blogs.user_id = users.id"])
        (map map-keys)
        (map map-to-domain)))
 
+
 (defn get-blog [db id]
   (let [rowid (from-base36 id)]
-    (some->> (sql/query db ["select rowid, * from blogs where rowid = ?" rowid])
+    (some->> (sql/query db ["select blogs.rowid, blogs.*, users.username from blogs left join users on blogs.user_id = users.id where blogs.rowid = ?" rowid])
              (first)
              (map-keys)
              (map-to-domain))))
