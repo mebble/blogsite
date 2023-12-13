@@ -33,3 +33,11 @@
               (fn [blog-id] (let [url (redirect-url blog-id slug)]
                               ;; [?] An ordinary redirect after POST doesn't seem to work, but not sure. Must revisit
                               (header {} "HX-Location" url))))))
+
+(defn post-new-comment [db req user_id]
+  (let [new-commentt (-> (select-keys (:params req) [:contents :blog_id])
+                         (update :blog_id parse-long)
+                         (assoc :user_id user_id))]
+    (e/branch (m/save-comment db new-commentt)
+              (fn [_] (status 500))
+              (fn [commentt] (render-file "views/comment.html" {:comment commentt})))))

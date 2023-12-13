@@ -11,4 +11,20 @@
     <p>{{blog.description}}</p>
 </div>
 <p>{{blog.contents}}</p>
+
+
+<h2 class="text-3xl font-semibold">Comments</h2>
+<ul id="comment-list" class="space-y-2">
+{% for comment in blog.comments %}
+{% endfor %}
+</ul>
+
+<form hx-post="/comments" hx-target="#comment-list" hx-swap="beforeend" class="space-y-2">
+    <h2 class="text-3xl font-semibold">Post a Comment</h2>
+    <div>
+        <textarea name="contents" rows="5" cols="50" class="block rounded-md border border-gray-500 py-1.5 pl-2 pr-20 text-gray-900 focus:focus:ring-inset sm:text-sm sm:leading-6"></textarea>
+        <input type="hidden" name="blog_id" value="{{blog.id}}"></input>
+    </div>
+    <button type="submit" class="bg-indigo-500 text-white px-2 py-1 rounded">Post Comment</button>
+</form>
 {% endblock %}

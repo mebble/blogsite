@@ -31,6 +31,7 @@
    (GET "/blogs" [] (c-blog/get-blogs db))
    (GET "/new", req (a/auth-route req (fn [{:keys [username]}] (c-blog/get-blog-creation username))))
    (POST "/blogs" req (a/auth-route req (fn [{:keys [user_id]}] (c-blog/post-new-blog db req user_id))))
+   (POST "/comments" req (a/auth-route req (fn [{:keys [user_id]}] (c-blog/post-new-comment db req user_id))))
    (GET "/blogs/:id/:slug" [id slug] (c-blog/get-blog db id slug))
    (GET "/:username" [username] (c-user/user-page db username))
    (r/not-found "Not found")))
