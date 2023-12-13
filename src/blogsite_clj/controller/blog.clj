@@ -18,7 +18,8 @@
 (defn get-blog [db id slug]
   (if-let [blog (m/get-blog db id)]
     (if (= slug (:slug blog))
-      (render-file "views/blog.html" {:blog blog})
+      (let [comments (m/get-comments db id)]
+        (render-file "views/blog.html" {:blog blog :comments comments}))
       (let [url (redirect-url (:id blog) (:slug blog))]
         (redirect url)))
     (not-found "no such blog post")))

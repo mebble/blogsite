@@ -17,29 +17,26 @@
 (defn- from-base36 [s]
   (Integer/parseInt s 36))
 
-(defn- map-keys [m]
-  (rename-keys m {:blogs/id :id
-                  :blogs/slug :slug
-                  :blogs/title :title
-                  :blogs/description :description
-                  :blogs/contents :contents
-                  :blogs/user_id  :user_id
-                  :users/username :username}))
-
-(defn- map-to-domain [m]
-  (update m :id to-base36))
+(defn- map-blog-to-domain [m]
+  (-> m
+      (rename-keys {:blogs/id :id
+                    :blogs/slug :slug
+                    :blogs/title :title
+                    :blogs/description :description
+                    :blogs/contents :contents
+                    :blogs/user_id  :user_id
+                    :users/username :username})
+      (update :id to-base36)))
 
 (defn get-blogs [db]
   (->> (sql/query db ["select blogs.*, users.username from blogs left join users on blogs.user_id = users.id"])
-       (map map-keys)
-       (map map-to-domain)))
+       (map map-blog-to-domain)))
 
 (defn get-blog [db id-str]
   (let [id (from-base36 id-str)]
     (some->> (sql/query db ["select blogs.*, users.username from blogs left join users on blogs.user_id = users.id where blogs.id = ?" id])
              (first)
-             (map-keys)
-             (map-to-domain))))
+             (map-blog-to-domain))))
 
 (defn save-blog [db blog user_id]
   (try-either
@@ -54,11 +51,11 @@
         (:blogs/id)
         (to-base36))))
 
-(defn- map-comment-to-domain [comment]
-  (rename-keys comment {:comments/id :id,
-                        :comments/contents :contents,
-                        :comments/user_id :user_id,
-                        :comments/blog_id :blog_id}))
+(defn- map-comment-to-domain [c]
+  (rename-keys c {:comments/id :id,
+                  :comments/contents :contents,
+                  :comments/user_id :user_id,
+                  :comments/blog_id :blog_id}))
 
 (defn save-comment [db commentt]
   (try-either
@@ -69,3 +66,7 @@
           (:user_id commentt)
           (:blog_id commentt)])
         (map-comment-to-domain))))
+
+(defn get-comments [db blog_id]
+  (->> (sql/query db ["select * from comments where blog_id = ?" blog_id])
+       (map map-comment-to-domain)))

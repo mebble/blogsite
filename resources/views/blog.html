@@ -15,7 +15,8 @@
 
 <h2 class="text-3xl font-semibold">Comments</h2>
 <ul id="comment-list" class="space-y-2">
-{% for comment in blog.comments %}
+{% for comment in comments %}
+    {% include "views/comment.html" %}
 {% endfor %}
 </ul>
 
