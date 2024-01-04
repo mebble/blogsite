@@ -38,8 +38,9 @@
   (some-> (m/get-user db username)
           (#(render-file "views/user.html" {:user %1}))))
 
-(defn dashboard [db username]
-  (render-file "views/dashboard.html" {:user (m/get-user db username)}))
+(defn dashboard [db req]
+  (let [username (get-in req [:session :username])]
+    (render-file "views/dashboard.html" {:user (m/get-user db username)})))
 
 (defn logout []
   (header {:session nil} "HX-Location" "/login"))

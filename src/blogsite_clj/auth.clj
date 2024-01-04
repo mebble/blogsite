@@ -9,6 +9,6 @@
 (defn auth-route [req handler]
   (let [session (:session req)]
     (cond
-      (seq session)                  (handler session)
+      (seq session)                  (handler req)
       (= :get (:request-method req)) (redirect "/login")
       :else                          (header {} "HX-Location" "/login"))))
