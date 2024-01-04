@@ -24,11 +24,12 @@
 
 (def handler
   (routes
+   (GET "/" req (c-blog/get-blogs db req))
+   (GET "/blogs" req (c-blog/get-blogs db req))
    (GET "/login" [] (c-user/login-page))
    (POST "/login" req (c-user/login db req))
    (POST "/logout" [] (c-user/logout))
    (GET "/dashboard" req (a/auth-route req (fn [req] (c-user/dashboard db req))))
-   (GET "/blogs" [] (c-blog/get-blogs db))
    (GET "/new", req (a/auth-route req (fn [req] (c-blog/get-blog-creation req))))
    (POST "/blogs" req (a/auth-route req (fn [req] (c-blog/post-new-blog db req))))
    (POST "/comments" req (a/auth-route req (fn [req] (c-blog/post-new-comment db req))))

@@ -43,4 +43,4 @@
     (render-file "views/dashboard.html" {:user (m/get-user db username)})))
 
 (defn logout []
-  (header {:session nil} "HX-Location" "/login"))
+  (header {:session nil} "HX-Location" "/"))

@@ -10,8 +10,8 @@
   (let [username (get-in req [:session :username])]
     (render-file "views/new.html" {:username username})))
 
-(defn get-blogs [db]
-  (render-file "views/blogs.html" {:blogs (m/get-blogs db)}))
+(defn get-blogs [db req]
+  (render-file "views/blogs.html" {:blogs (m/get-blogs db) :session (:session req)}))
 
 (defn- redirect-url [id slug]
   (str "/blogs/" id "/" slug))
