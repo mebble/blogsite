@@ -15,4 +15,13 @@
 </div>
 
 <h2>Your blog posts:</h2>
+<ul class="space-y-2">
+{% for blog in blogs %}
+    <li class="border border-black rounded-md px-4 py-3">
+        <a href="/blogs/{{blog.id}}/{{blog.slug}}" class="text-2xl font-semibold underline underline-offset-4 inline-block mb-1">{{blog.title}}</a>
+        <p><small>By <a href="/{{blog.username}}" class="underline">{{blog.username}}</a></small></p>
+        <p>{{blog.description}}</p>
+    </li>
+{% endfor %}
+</ul>
 {% endblock %}

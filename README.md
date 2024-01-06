@@ -34,6 +34,12 @@ Restart the server on file changes:
 watchexec --watch src --restart lein run
 ```
 
+Open development database:
+
+```
+sqlite3 blog.db
+```
+
 ## Architecture
 
 ### Code

@@ -38,6 +38,10 @@
              (first)
              (map-blog-to-domain))))
 
+(defn get-blogs-by-user [db user-id]
+  (->> (sql/query db ["select blogs.*, users.username from blogs left join users on blogs.user_id = users.id where blogs.user_id = ?" user-id])
+       (map map-blog-to-domain)))
+
 (defn save-blog [db blog user_id]
   (try-either
    (->> (jdbc/execute-one!

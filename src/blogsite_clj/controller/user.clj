@@ -2,6 +2,7 @@
   (:require
    [blogsite-clj.auth :refer [create-session]]
    [blogsite-clj.model.user :as m]
+   [blogsite-clj.model.blog :as mb]
    [buddy.hashers :as hashers]
    [ring.util.response :refer [header]]
    [selmer.parser :refer [render-file]]))
@@ -39,8 +40,10 @@
           (#(render-file "views/user.html" {:user %1}))))
 
 (defn dashboard [db req]
-  (let [username (get-in req [:session :username])]
-    (render-file "views/dashboard.html" {:user (m/get-user db username)})))
+  (let [username (get-in req [:session :username])
+        user (m/get-user db username)
+        blogs (mb/get-blogs-by-user db (:id user))]
+    (render-file "views/dashboard.html" {:user user :blogs blogs})))
 
 (defn logout []
   (header {:session nil} "HX-Location" "/"))
