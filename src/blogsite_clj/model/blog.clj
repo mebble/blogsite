@@ -59,7 +59,8 @@
   (rename-keys c {:comments/id :id,
                   :comments/contents :contents,
                   :comments/user_id :user_id,
-                  :comments/blog_id :blog_id}))
+                  :comments/blog_id :blog_id
+                  :users/username :username}))
 
 (defn save-comment [db commentt]
   (try-either
@@ -72,5 +73,5 @@
         (map-comment-to-domain))))
 
 (defn get-comments [db blog_id]
-  (->> (sql/query db ["select * from comments where blog_id = ?" blog_id])
+  (->> (sql/query db ["select comments.*, users.username from comments left join users on comments.user_id = users.id where comments.blog_id = ?" blog_id])
        (map map-comment-to-domain)))

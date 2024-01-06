@@ -39,9 +39,10 @@
 
 (defn post-new-comment [db req]
   (let [user_id  (get-in req [:session :user_id])
+        username (get-in req [:session :username])
         new-commentt (-> (select-keys (:params req) [:contents :blog_id])
                          (update :blog_id parse-long)
                          (assoc :user_id user_id))]
     (e/branch (m/save-comment db new-commentt)
               (fn [_] (status 500))
-              (fn [commentt] (render-file "views/comment.html" {:comment commentt})))))
+              (fn [commentt] (render-file "views/comment.html" {:comment (assoc commentt :username username)})))))
