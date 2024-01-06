@@ -36,8 +36,9 @@
     {:status 400}))
 
 (defn user-page [db username]
-  (some-> (m/get-user db username)
-          (#(render-file "views/user.html" {:user %1}))))
+  (when-let [user (m/get-user db username)]
+    (let [blogs (mb/get-blogs-by-user db (:id user))]
+      (render-file "views/user.html" {:user user :blogs blogs}))))
 
 (defn dashboard [db req]
   (let [username (get-in req [:session :username])
