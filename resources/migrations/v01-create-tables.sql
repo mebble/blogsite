@@ -7,8 +7,8 @@ CREATE TABLE users (
 );
 
 -- TODO Remove after prototyping
-DROP TABLE IF EXISTS blogs;
-CREATE TABLE blogs (
+DROP TABLE IF EXISTS posts;
+CREATE TABLE posts (
     id integer primary key autoincrement,
     slug text,
     title text,
@@ -24,9 +24,9 @@ CREATE TABLE comments (
     id integer primary key autoincrement,
     contents text,
     user_id integer,
-    blog_id integer,
+    post_id integer,
     foreign key(user_id) references users(id),
-    foreign key(blog_id) references blogs(id)
+    foreign key(post_id) references posts(id)
 );
 
 -- https://github.com/luminus-framework/jdbc-ring-session

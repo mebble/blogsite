@@ -2,7 +2,7 @@
   (:require
    [blogsite-clj.auth :refer [create-session]]
    [blogsite-clj.model.user :as m]
-   [blogsite-clj.model.blog :as mb]
+   [blogsite-clj.model.post :as mp]
    [buddy.hashers :as hashers]
    [ring.util.response :refer [header]]
    [selmer.parser :refer [render-file]]))
@@ -37,14 +37,14 @@
 
 (defn user-page [db username]
   (when-let [user (m/get-user db username)]
-    (let [blogs (mb/get-blogs-by-user db (:id user))]
-      (render-file "views/user.html" {:user user :blogs blogs}))))
+    (let [posts (mp/get-posts-by-user db (:id user))]
+      (render-file "views/user.html" {:user user :posts posts}))))
 
 (defn dashboard [db req]
   (let [username (get-in req [:session :username])
         user (m/get-user db username)
-        blogs (mb/get-blogs-by-user db (:id user))]
-    (render-file "views/dashboard.html" {:user user :blogs blogs})))
+        posts (mp/get-posts-by-user db (:id user))]
+    (render-file "views/dashboard.html" {:user user :posts posts})))
 
 (defn logout []
   (header {:session nil} "HX-Location" "/"))

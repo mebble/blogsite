@@ -2,7 +2,7 @@
   (:gen-class)
   (:require
    [blogsite-clj.auth :as a]
-   [blogsite-clj.controller.blog :as c-blog]
+   [blogsite-clj.controller.post :as c-post]
    [blogsite-clj.controller.user :as c-user]
    [compojure.core :refer [GET POST routes]]
    [compojure.route :as r]
@@ -24,16 +24,16 @@
 
 (def handler
   (routes
-   (GET "/" req (c-blog/get-blogs db req))
-   (GET "/blogs" req (c-blog/get-blogs db req))
+   (GET "/" req (c-post/get-posts db req))
+   (GET "/posts" req (c-post/get-posts db req))
    (GET "/login" [] (c-user/login-page))
    (POST "/login" req (c-user/login db req))
    (POST "/logout" [] (c-user/logout))
    (GET "/dashboard" req (a/auth-route req (fn [req] (c-user/dashboard db req))))
-   (GET "/new", req (a/auth-route req (fn [req] (c-blog/get-blog-creation req))))
-   (POST "/blogs" req (a/auth-route req (fn [req] (c-blog/post-new-blog db req))))
-   (POST "/comments" req (a/auth-route req (fn [req] (c-blog/post-new-comment db req))))
-   (GET "/blogs/:id/:slug" [id slug] (c-blog/get-blog db id slug))
+   (GET "/new", req (a/auth-route req (fn [req] (c-post/get-post-creation req))))
+   (POST "/posts" req (a/auth-route req (fn [req] (c-post/post-new-post db req))))
+   (POST "/comments" req (a/auth-route req (fn [req] (c-post/post-new-comment db req))))
+   (GET "/posts/:id/:slug" [id slug] (c-post/get-post db id slug))
    (GET "/:username" [username] (c-user/user-page db username))
    (r/not-found "Not found")))
 
