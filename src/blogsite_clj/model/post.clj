@@ -46,14 +46,13 @@
   (try-either
    (->> (jdbc/execute-one!
          db
-         ["insert into posts (slug, title, description, contents, user_id) values (?, ?, ?, ?, ?) returning id"
+         ["insert into posts (slug, title, description, contents, user_id) values (?, ?, ?, ?, ?) returning *"
           (:slug post)
           (:title post)
           (:description post)
           (:contents post)
           user_id])
-        (:posts/id)
-        (to-base36))))
+        (map-post-to-domain))))
 
 (defn- map-comment-to-domain [c]
   (rename-keys c {:comments/id :id,

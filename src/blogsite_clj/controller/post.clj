@@ -33,9 +33,9 @@
                      (assoc :slug slug))]
     (e/branch (m/save-post db new-post user_id)
               (fn [_] (status 500))
-              (fn [post-id] (let [url (redirect-url post-id slug)]
+              (fn [{:keys [id]}] (let [url (redirect-url id slug)]
                               ;; [?] An ordinary redirect after POST doesn't seem to work, but not sure. Must revisit
-                              (header {} "HX-Location" url))))))
+                                   (header {} "HX-Location" url))))))
 
 (defn post-new-comment [db req]
   (let [user_id  (get-in req [:session :user_id])
