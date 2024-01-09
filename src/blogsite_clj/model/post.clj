@@ -71,6 +71,7 @@
           (:post_id commentt)])
         (map-comment-to-domain))))
 
-(defn get-comments [db post_id]
-  (->> (sql/query db ["select comments.*, users.username from comments left join users on comments.user_id = users.id where comments.post_id = ?" post_id])
-       (map map-comment-to-domain)))
+(defn get-comments [db post-id-str]
+  (let [id (from-base36 post-id-str)]
+    (->> (sql/query db ["select comments.*, users.username from comments left join users on comments.user_id = users.id where comments.post_id = ?" id])
+         (map map-comment-to-domain))))

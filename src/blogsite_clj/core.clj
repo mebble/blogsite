@@ -7,7 +7,7 @@
    [compojure.core :refer [GET POST routes]]
    [compojure.route :as r]
    [jdbc-ring-session.core :refer [jdbc-store]]
-   [next.jdbc :refer [get-datasource execute-one!]]
+   [next.jdbc :refer [get-datasource]]
    [ring.adapter.jetty :refer [run-jetty]]
    [ring.middleware.keyword-params :refer [wrap-keyword-params]]
    [ring.middleware.params :refer [wrap-params]]
@@ -15,12 +15,11 @@
    [ring.middleware.session :refer [wrap-session]]
    [selmer.parser :refer [cache-off!]]))
 
-(def db (get-datasource {:dbtype "sqlite" :dbname "blog.db"}))
-(execute-one! db ["PRAGMA foreign_keys = ON"]) ;; must do this per connection to the db, hence can't put this in migration file
-
 (defn env [key]
   (some-> (System/getenv key)
           (read-string)))
+
+(def db (get-datasource {:dbtype "postgresql" :dbname (env "DB_NAME")}))
 
 (def handler
   (routes

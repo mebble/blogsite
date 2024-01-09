@@ -34,10 +34,12 @@ Restart the server on file changes:
 watchexec --watch src --restart lein run
 ```
 
-Open development database:
+Set up development database:
 
 ```
-sqlite3 blog.db
+export DB_NAME=blogsite_dev
+createdb blogsite_dev
+psql blogsite_dev
 ```
 
 ## Architecture

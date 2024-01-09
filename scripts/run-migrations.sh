@@ -1,1 +1,1 @@
-ls ./resources/migrations | xargs -I {} sqlite3 blog.db -init ./resources/migrations/{}
+ls ./resources/migrations | xargs -I {} psql -d blogsite_dev -f ./resources/migrations/{}
