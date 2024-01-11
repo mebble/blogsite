@@ -12,7 +12,12 @@
 <ul class="space-y-2">
 {% for post in posts %}
     <li class="border border-black rounded-md px-4 py-3">
-        <a href="/posts/{{post.id}}/{{post.slug}}" class="text-2xl font-semibold underline underline-offset-4 inline-block mb-1">{{post.title}}</a>
+        <div class="flex justify-between items-center">
+            <a href="/posts/{{post.id}}/{{post.slug}}" class="text-2xl font-semibold underline underline-offset-4 inline-block mb-1">{{post.title}}</a>
+            {% ifequal session.user_id post.user_id %}
+                <a href="/posts/{{post.id}}/{{post.slug}}/edit" class="underline underline-offset-2">Edit</a>
+            {% endifequal %}
+        </div>
         <p><small>By <a href="/{{post.username}}" class="underline">{{post.username}}</a></small></p>
         <p>{{post.description}}</p>
     </li>

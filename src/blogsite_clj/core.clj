@@ -32,8 +32,8 @@
    (GET "/new", req (a/auth-route req (fn [req] (c-post/get-post-creation req))))
    (POST "/posts" req (a/auth-route req (fn [req] (c-post/post-new-post db req))))
    (POST "/comments" req (a/auth-route req (fn [req] (c-post/post-new-comment db req))))
-   (GET "/posts/:id/:slug" [id slug] (c-post/get-post db id slug))
-   (GET "/:username" [username] (c-user/user-page db username))
+   (GET "/posts/:id/:slug" req (c-post/get-post db req))
+   (GET "/:username" req (c-user/user-page db req))
    (r/not-found "Not found")))
 
 (def app (-> handler

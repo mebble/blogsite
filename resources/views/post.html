@@ -5,10 +5,15 @@
 {% endblock %}
 
 {% block body %}
-<div class="mb-2 space-y-2">
-    <h1 class="text-5xl font-semibold">{{post.title}}</h1>
-    <p><small>By {{post.username}}</small></p>
-    <p>{{post.description}}</p>
+<div class="flex justify-between items-center mb-2 space-y-2">
+    <div>
+        <h1 class="text-5xl font-semibold">{{post.title}}</h1>
+        <p><small>By <a href="/{{post.username}}" class="underline">{{post.username}}</a></small></p>
+        <p>{{post.description}}</p>
+    </div>
+    {% ifequal session.user_id post.user_id %}
+        <a href="/posts/{{post.id}}/{{post.slug}}/edit" class="underline underline-offset-2">Edit</a>
+    {% endifequal %}
 </div>
 <p>{{post.contents}}</p>
 

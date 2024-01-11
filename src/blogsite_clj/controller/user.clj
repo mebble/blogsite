@@ -35,10 +35,11 @@
     "signup" (signup db req)
     {:status 400}))
 
-(defn user-page [db username]
-  (when-let [user (m/get-user db username)]
-    (let [posts (mp/get-posts-by-user db (:id user))]
-      (render-file "views/user.html" {:user user :posts posts}))))
+(defn user-page [db req]
+  (let [username (get-in req [:params :username])]
+    (when-let [user (m/get-user db username)]
+      (let [posts (mp/get-posts-by-user db (:id user))]
+        (render-file "views/user.html" {:user user :posts posts :session (:session req)})))))
 
 (defn dashboard [db req]
   (let [username (get-in req [:session :username])

@@ -16,14 +16,16 @@
 (defn- redirect-url [id slug]
   (str "/posts/" id "/" slug))
 
-(defn get-post [db id slug]
-  (if-let [post (m/get-post db id)]
-    (if (= slug (:slug post))
-      (let [comments (m/get-comments db id)]
-        (render-file "views/post.html" {:post post :comments comments}))
-      (let [url (redirect-url (:id post) (:slug post))]
-        (redirect url)))
-    (not-found "no such blog post")))
+(defn get-post [db req]
+  (let [id (get-in req [:params :id])
+        slug (get-in req [:params :slug])]
+    (if-let [post (m/get-post db id)]
+      (if (= slug (:slug post))
+        (let [comments (m/get-comments db id)]
+          (render-file "views/post.html" {:post post :comments comments :session (:session req)}))
+        (let [url (redirect-url (:id post) (:slug post))]
+          (redirect url)))
+      (not-found "no such blog post"))))
 
 (defn post-new-post [db req]
   (let [user_id  (get-in req [:session :user_id])
