@@ -1,10 +1,10 @@
 (ns blogsite-clj.controller.post
   (:require
+   [blogsite-clj.mappers.post :refer [comment:http->domain http->domain]]
    [blogsite-clj.model.post :as m]
    [cats.monad.either :as e]
    [ring.util.response :refer [header not-found redirect status]]
-   [selmer.parser :refer [render-file]]
-   [sluj.core :refer [sluj]]))
+   [selmer.parser :refer [render-file]]))
 
 (defn get-post-creation [req]
   (let [username (get-in req [:session :username])]
@@ -28,23 +28,17 @@
       (not-found "no such blog post"))))
 
 (defn post-new-post [db req]
-  (let [user_id  (get-in req [:session :user_id])
-        params   (:params req)
-        slug     (sluj (:title params ""))
-        new-post (-> (select-keys params [:title :description :contents])
-                     (assoc :slug slug))]
-    (e/branch (m/save-post db new-post user_id)
+  (let [new-post (http->domain req)]
+    (e/branch (m/save-post db new-post)
               (fn [_] (status 500))
-              (fn [{:keys [id]}] (let [url (redirect-url id slug)]
-                              ;; [?] An ordinary redirect after POST doesn't seem to work, but not sure. Must revisit
-                                   (header {} "HX-Location" url))))))
+              (fn [{:keys [id slug]}]
+                (let [url (redirect-url id slug)]
+                  ;; [?] An ordinary redirect after POST doesn't seem to work, but not sure. Must revisit
+                  (header {} "HX-Location" url))))))
 
 (defn post-new-comment [db req]
-  (let [user_id  (get-in req [:session :user_id])
-        username (get-in req [:session :username])
-        new-commentt (-> (select-keys (:params req) [:contents :post_id])
-                         (update :post_id parse-long)
-                         (assoc :user_id user_id))]
+  (let [username (get-in req [:session :username])
+        new-commentt (comment:http->domain req)]
     (e/branch (m/save-comment db new-commentt)
               (fn [_] (status 500))
               (fn [commentt] (render-file "views/comment.html" {:comment (assoc commentt :username username)})))))

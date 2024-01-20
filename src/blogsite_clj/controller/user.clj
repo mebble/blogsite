@@ -1,8 +1,9 @@
 (ns blogsite-clj.controller.user
   (:require
    [blogsite-clj.auth :refer [create-session]]
-   [blogsite-clj.model.user :as m]
+   [blogsite-clj.mappers.user :refer [http->domain]]
    [blogsite-clj.model.post :as mp]
+   [blogsite-clj.model.user :as m]
    [buddy.hashers :as hashers]
    [ring.util.response :refer [header]]
    [selmer.parser :refer [render-file]]))
@@ -22,9 +23,8 @@
       (header {} "HX-Location" "/login"))))
 
 (defn- signup [db req]
-  (let [user-in (-> (select-keys (:params req) [:username :password])
-                    (update :password (fn [p] (hashers/derive p {:alg :bcrypt+blake2b-512}))))
-        user (m/insert-user db user-in)]
+  (let [new-user (http->domain req)
+        user (m/insert-user db new-user)]
     (assoc
      (header {} "HX-Location" "/dashboard")
      :session (create-session user))))
