@@ -54,3 +54,15 @@
   (let [id (from-base36 post-id-str)]
     (->> (sql/query db ["select comments.*, users.username from comments left join users on comments.user_id = users.id where comments.post_id = ?" id])
          (map comment:db->domain))))
+
+(defn update-post [db post]
+  (let [id (from-base36 (:id post))]
+    (try-either
+     (->> (jdbc/execute-one!
+           db
+           ["update posts set (slug, title, description, contents) = (?, ?, ?, ?) where id = ?"
+            (:slug post)
+            (:title post)
+            (:description post)
+            (:contents post)
+            id])))))

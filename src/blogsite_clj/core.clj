@@ -4,7 +4,7 @@
    [blogsite-clj.auth :as a]
    [blogsite-clj.controller.post :as c-post]
    [blogsite-clj.controller.user :as c-user]
-   [compojure.core :refer [GET POST routes]]
+   [compojure.core :refer [GET POST PUT routes]]
    [compojure.route :as r]
    [jdbc-ring-session.core :refer [jdbc-store]]
    [next.jdbc :refer [get-datasource]]
@@ -33,6 +33,8 @@
    (POST "/posts" req (a/auth-route req (fn [req] (c-post/post-new-post db req))))
    (POST "/comments" req (a/auth-route req (fn [req] (c-post/post-new-comment db req))))
    (GET "/posts/:id/:slug" req (c-post/get-post db req))
+   (GET "/posts/:id/:slug/edit" req (a/auth-route req (fn [req] (c-post/get-edit-page db req))))
+   (PUT "/posts/:id/:slug" req (a/auth-route req (fn [req] (c-post/update-post db req))))
    (GET "/:username" req (c-user/user-page db req))
    (r/not-found "Not found")))
 

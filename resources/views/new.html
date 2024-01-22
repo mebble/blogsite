@@ -6,7 +6,7 @@
 
 {% block body %}
 <div class="mb-6">
-    <h1 class="text-5xl font-semibold">Hi {{ username }}, create a new post</h1>
+    <h1 class="text-5xl font-semibold">Hi {{ session.username }}, create a new post</h1>
 </div>
 
 <form hx-post="/posts" class="space-y-2">

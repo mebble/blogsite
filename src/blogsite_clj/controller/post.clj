@@ -7,8 +7,7 @@
    [selmer.parser :refer [render-file]]))
 
 (defn get-post-creation [req]
-  (let [username (get-in req [:session :username])]
-    (render-file "views/new.html" {:username username})))
+  (render-file "views/new.html" {:session (:session req)}))
 
 (defn get-posts [db req]
   (render-file "views/posts.html" {:posts (m/get-posts db) :session (:session req)}))
@@ -26,6 +25,24 @@
         (let [url (redirect-url (:id post) (:slug post))]
           (redirect url)))
       (not-found "no such blog post"))))
+
+(defn get-edit-page [db req]
+  (let [id (get-in req [:params :id])
+        slug (get-in req [:params :slug])]
+    (if-let [post (m/get-post db id)]
+      (if (= slug (:slug post))
+        (render-file "views/edit.html" {:post post :session (:session req)})
+        (let [url (redirect-url (:id post) (:slug post))]
+          (redirect url)))
+      (not-found "no such blog post"))))
+
+(defn update-post [db req]
+  (let [updated-post (http->domain req)]
+    (e/branch (m/update-post db updated-post)
+              (fn [_] (status 500))
+              (fn [_]
+                (let [url (redirect-url (:id updated-post) (:slug updated-post))]
+                  (header {} "HX-Location" url))))))
 
 (defn post-new-post [db req]
   (let [new-post (http->domain req)]

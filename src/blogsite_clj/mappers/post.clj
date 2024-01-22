@@ -10,6 +10,7 @@
   (let [params (:params http-req)
         slug   (sluj (:title params ""))]
     (-> (select-keys params [:title :description :contents])
+        (assoc :id (:post-id params))
         (assoc :user_id (get-in http-req [:session :user_id]))
         (assoc :username (get-in http-req [:session :username]))
         (assoc :slug slug))))
