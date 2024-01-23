@@ -28,8 +28,9 @@
 
 (defn get-edit-page [db req]
   (let [id (get-in req [:params :id])
-        slug (get-in req [:params :slug])]
-    (if-let [post (m/get-post db id)]
+        slug (get-in req [:params :slug])
+        user-id (get-in req [:session :user_id])]
+    (if-let [post (m/get-post-by-user db user-id id)]
       (if (= slug (:slug post))
         (render-file "views/edit.html" {:post post :session (:session req)})
         (let [url (redirect-url (:id post) (:slug post))]

@@ -5,12 +5,6 @@
    [next.jdbc :as jdbc]
    [next.jdbc.sql :as sql]))
 
-(defmacro try-either [expr]
-  (list
-   'try
-   (list 'e/right expr)
-   '(catch Exception e (e/left e))))
-
 (defn- from-base36 [s]
   (Integer/parseInt s 36))
 
@@ -24,12 +18,18 @@
              (first)
              (db->domain))))
 
+(defn get-post-by-user [db user-id post-id]
+  (let [post-db-id (from-base36 post-id)]
+    (some->> (sql/query db ["select * from posts where id = ? and user_id = ?" post-db-id user-id])
+             (first)
+             (db->domain))))
+
 (defn get-posts-by-user [db user-id]
   (->> (sql/query db ["select posts.*, users.username from posts left join users on posts.user_id = users.id where posts.user_id = ?" user-id])
        (map db->domain)))
 
 (defn save-post [db post]
-  (try-either
+  (e/try-either
    (->> (jdbc/execute-one!
          db
          ["insert into posts (slug, title, description, contents, user_id) values (?, ?, ?, ?, ?) returning *"
@@ -41,7 +41,7 @@
         (db->domain))))
 
 (defn save-comment [db commentt]
-  (try-either
+  (e/try-either
    (->> (jdbc/execute-one!
          db
          ["insert into comments (contents, user_id, post_id) values (?, ?, ?) returning *"
@@ -55,14 +55,26 @@
     (->> (sql/query db ["select comments.*, users.username from comments left join users on comments.user_id = users.id where comments.post_id = ?" id])
          (map comment:db->domain))))
 
+(defn- did-update? [res]
+  (-> res
+      (:next.jdbc/update-count)
+      (zero?)
+      (not)))
+
 (defn update-post [db post]
-  (let [id (from-base36 (:id post))]
-    (try-either
-     (->> (jdbc/execute-one!
-           db
-           ["update posts set (slug, title, description, contents) = (?, ?, ?, ?) where id = ?"
-            (:slug post)
-            (:title post)
-            (:description post)
-            (:contents post)
-            id])))))
+  (let [id (from-base36 (:id post))
+        user-id (:user_id post)]
+    (e/branch-right
+     (e/try-either
+      (->> (jdbc/execute-one!
+            db
+            ["update posts set (slug, title, description, contents) = (?, ?, ?, ?) where id = ? and user_id = ?"
+             (:slug post)
+             (:title post)
+             (:description post)
+             (:contents post)
+             id
+             user-id])))
+     (fn [res] (if (did-update? res)
+                 (e/right)
+                 (e/left))))))
