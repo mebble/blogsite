@@ -10,16 +10,24 @@ FIXME: explanation
 
 ## Development
 
-Run database migrations:
-
-```
-sh scripts/run-migrations.sh
-```
-
 Set environment variables:
 
 ```
 export DEVELOPMENT=true
+export DB_NAME=blogsite_dev
+```
+
+Set up development database:
+
+```
+createdb $DB_NAME
+psql $DB_NAME
+```
+
+Run database migrations:
+
+```
+sh scripts/run-migrations.sh
 ```
 
 Run:
@@ -32,14 +40,6 @@ Restart the server on file changes:
 
 ```
 watchexec --watch src --restart lein run
-```
-
-Set up development database:
-
-```
-export DB_NAME=blogsite_dev
-createdb blogsite_dev
-psql blogsite_dev
 ```
 
 ## Architecture

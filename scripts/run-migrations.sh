@@ -1,1 +1,1 @@
-ls ./resources/migrations | xargs -I {} psql -d blogsite_dev -f ./resources/migrations/{}
+ls ./resources/migrations | xargs -t -I {} psql -d $DB_NAME -f ./resources/migrations/{}
