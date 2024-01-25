@@ -25,6 +25,7 @@
         <br>
         <textarea id="contents" name="contents" rows="10" cols="100" class="block w-full rounded-md border border-gray-500 py-1.5 pl-2 pr-20 text-gray-900 focus:focus:ring-inset sm:text-sm sm:leading-6"></textarea>
     </div>
-    <button type="submit" class="bg-indigo-500 text-white px-2 py-1 rounded">Create</button>
+    <button type="submit" name="published" value="true" class="bg-indigo-500 text-white px-2 py-1 rounded">Create and publish</button>
+    <button type="submit" name="published" value="false" class="bg-indigo-500 text-white px-2 py-1 rounded">Create as draft</button>
 </form>
 {% endblock %}

@@ -8,9 +8,15 @@
 (defn- from-base36 [s]
   (Integer/parseInt s 36))
 
-(defn get-posts [db]
-  (->> (sql/query db ["select posts.*, users.username from posts left join users on posts.user_id = users.id"])
+(defn get-published-posts [db]
+  (->> (sql/query db ["select posts.*, users.username from posts left join users on posts.user_id = users.id where posts.published = true"])
        (map db->domain)))
+
+(defn get-published-post [db id-str]
+  (let [id (from-base36 id-str)]
+    (some->> (sql/query db ["select posts.*, users.username from posts left join users on posts.user_id = users.id where posts.id = ? and posts.published = true" id])
+             (first)
+             (db->domain))))
 
 (defn get-post [db id-str]
   (let [id (from-base36 id-str)]
@@ -20,7 +26,7 @@
 
 (defn get-post-by-user [db user-id post-id]
   (let [post-db-id (from-base36 post-id)]
-    (some->> (sql/query db ["select * from posts where id = ? and user_id = ?" post-db-id user-id])
+    (some->> (sql/query db ["select posts.*, users.username from posts left join users on posts.user_id = users.id where posts.id = ? and posts.user_id = ?" post-db-id user-id])
              (first)
              (db->domain))))
 
@@ -28,16 +34,21 @@
   (->> (sql/query db ["select posts.*, users.username from posts left join users on posts.user_id = users.id where posts.user_id = ?" user-id])
        (map db->domain)))
 
+(defn get-published-posts-by-user [db user-id]
+  (->> (sql/query db ["select posts.*, users.username from posts left join users on posts.user_id = users.id where posts.user_id = ? and posts.published = true" user-id])
+       (map db->domain)))
+
 (defn save-post [db post]
   (e/try-either
    (->> (jdbc/execute-one!
          db
-         ["insert into posts (slug, title, description, contents, user_id) values (?, ?, ?, ?, ?) returning *"
+         ["insert into posts (slug, title, description, contents, user_id, published) values (?, ?, ?, ?, ?, ?) returning *"
           (:slug post)
           (:title post)
           (:description post)
           (:contents post)
-          (:user_id post)])
+          (:user_id post)
+          (:published post)])
         (db->domain))))
 
 (defn save-comment [db commentt]
@@ -68,11 +79,12 @@
      (e/try-either
       (->> (jdbc/execute-one!
             db
-            ["update posts set (slug, title, description, contents) = (?, ?, ?, ?) where id = ? and user_id = ?"
+            ["update posts set (slug, title, description, contents, published) = (?, ?, ?, ?, ?) where id = ? and user_id = ?"
              (:slug post)
              (:title post)
              (:description post)
              (:contents post)
+             (:published post)
              id
              user-id])))
      (fn [res] (if (did-update? res)

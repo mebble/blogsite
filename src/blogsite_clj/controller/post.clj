@@ -10,15 +10,18 @@
   (render-file "views/new.html" {:session (:session req)}))
 
 (defn get-posts [db req]
-  (render-file "views/posts.html" {:posts (m/get-posts db) :session (:session req)}))
+  (render-file "views/posts.html" {:posts (m/get-published-posts db) :session (:session req)}))
 
 (defn- redirect-url [id slug]
   (str "/posts/" id "/" slug))
 
 (defn get-post [db req]
   (let [id (get-in req [:params :id])
-        slug (get-in req [:params :slug])]
-    (if-let [post (m/get-post db id)]
+        slug (get-in req [:params :slug])
+        logged-in? (seq (:session req))]
+    (if-let [post (if logged-in?
+                    (m/get-post db id)
+                    (m/get-published-post db id))]
       (if (= slug (:slug post))
         (let [comments (m/get-comments db id)]
           (render-file "views/post.html" {:post post :comments comments :session (:session req)}))

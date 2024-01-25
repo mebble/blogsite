@@ -38,7 +38,7 @@
 (defn user-page [db req]
   (let [username (get-in req [:params :username])]
     (when-let [user (m/get-user db username)]
-      (let [posts (mp/get-posts-by-user db (:id user))]
+      (let [posts (mp/get-published-posts-by-user db (:id user))]
         (render-file "views/user.html" {:user user :posts posts :session (:session req)})))))
 
 (defn dashboard [db req]

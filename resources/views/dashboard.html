@@ -18,9 +18,16 @@
 <ul class="space-y-2">
 {% for post in posts %}
     <li class="border border-black rounded-md px-4 py-3">
-        <div class="flex justify-between items-center">
-            <a href="/posts/{{post.id}}/{{post.slug}}" class="text-2xl font-semibold underline underline-offset-4 inline-block mb-1">{{post.title}}</a>
-            <a href="/posts/{{post.id}}/{{post.slug}}/edit" class="underline underline-offset-2">Edit</a>
+        <div class="flex">
+            <div class="flex items-center space-x-2">
+                <a href="/posts/{{post.id}}/{{post.slug}}" class="text-2xl font-semibold underline underline-offset-4 inline-block mb-1">{{post.title}}</a>
+                {% if post.published %}
+                {% include "views/status-published.html" %}
+                {% else %}
+                {% include "views/status-draft.html" %}
+                {% endif %}
+            </div>
+            <a href="/posts/{{post.id}}/{{post.slug}}/edit" class="underline underline-offset-2 ml-auto">Edit</a>
         </div>
         <p><small>By <a href="/{{post.username}}" class="underline">{{post.username}}</a></small></p>
         <p>{{post.description}}</p>

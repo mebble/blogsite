@@ -5,16 +5,25 @@
 {% endblock %}
 
 {% block body %}
-<div class="flex justify-between items-center mb-2 space-y-2">
-    <div>
+<div class="flex justify-between">
+    <div class="mb-4">
         <h1 class="text-5xl font-semibold">{{post.title}}</h1>
-        <p><small>By <a href="/{{post.username}}" class="underline">{{post.username}}</a></small></p>
-        <p>{{post.description}}</p>
+        {% ifequal session.user_id post.user_id %}
+            <div class="mt-2">
+                {% if post.published %}
+                {% include "views/status-published.html" %}
+                {% else %}
+                {% include "views/status-draft.html" %}
+                {% endif %}
+            </div>
+        {% endifequal %}
     </div>
     {% ifequal session.user_id post.user_id %}
         <a href="/posts/{{post.id}}/{{post.slug}}/edit" class="underline underline-offset-2">Edit</a>
     {% endifequal %}
 </div>
+<p><small>By <a href="/{{post.username}}" class="underline">{{post.username}}</a></small></p>
+<p>{{post.description}}</p>
 <p>{{post.contents}}</p>
 
 
